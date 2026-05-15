@@ -23,14 +23,26 @@ public class RestaurantController {
     private final ReviewRepository reviewRepository;
 
     @GetMapping
-    public List<RestaurantResponse> getRestaurants(@RequestParam(required = false) String keyword) {
+    public List<RestaurantResponse> getRestaurants(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category) {
+        
         List<Restaurant> restaurants;
 
-        // 검색어가 전달된 경우 식당 이름으로 검색 (대소문자 구분 없음, 한글 포함)
-        if (keyword != null && !keyword.trim().isEmpty()) {
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        boolean hasCategory = category != null && !category.trim().isEmpty();
+
+        if (hasKeyword && hasCategory) {
+            // 이름과 카테고리 둘 다 검색
+            restaurants = restaurantRepository.findByNameContainingIgnoreCaseAndCategory(keyword, category);
+        } else if (hasKeyword) {
+            // 이름으로만 검색
             restaurants = restaurantRepository.findByNameContainingIgnoreCase(keyword);
+        } else if (hasCategory) {
+            // 카테고리로만 검색
+            restaurants = restaurantRepository.findByCategory(category);
         } else {
-            // 검색어가 없는 경우 전체 식당 목록 반환
+            // 둘 다 없으면 전체 반환
             restaurants = restaurantRepository.findAll();
         }
 
