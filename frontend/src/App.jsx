@@ -3,7 +3,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
-import { Search, Home, Heart, User, MessageSquareText } from 'lucide-react';
+import { Search, Home, Heart, User, MessageSquareText, SlidersHorizontal } from 'lucide-react';
 
 const CATEGORY_STYLE = {
   korean: {
@@ -153,16 +153,45 @@ function Sidebar({ activeMenu, setActiveMenu }) {
     </aside>
   );
 }
+function TopSearch({ query, setQuery, onOpenResults }) {
+  return (
+    <div className="absolute left-4 right-4 top-4 z-[450] flex items-center gap-3 lg:left-[260px] lg:right-[420px]">
+      <div className="flex h-12 flex-1 items-center gap-3 rounded-full bg-white/95 px-5 shadow-xl backdrop-blur">
+        <Search size={19} className="text-zinc-400" />
+        <input
+          value={query}
+          onFocus={onOpenResults}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            onOpenResults();
+          }}
+          placeholder="Search places..."
+          className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
+        />
+      </div>
+      <button
+        onClick={onOpenResults}
+        className="grid h-12 w-12 place-items-center rounded-full bg-white/95 text-orange-600 shadow-xl backdrop-blur transition hover:scale-105"
+        aria-label="Open search results"
+      >
+        <SlidersHorizontal size={19} />
+      </button>
+    </div>
+  );
+}
 
 const DEFAULT_CENTER = [37.5234, 127.0469];
 
 function App() {
+  const [query, setQuery] = useState('');
   const [selectedPlace, setSelectedPlace] = useState(PLACES[0] ?? null);
   const [activeMenu, setActiveMenu] = useState('home');
   const mapCenter = selectedPlace?.position ?? DEFAULT_CENTER;
+  const [showResultsPanel, setShowResultsPanel] = useState(false);
 
   return (
     <main className="map-page">
+      <TopSearch query={query} setQuery={setQuery} onOpenResults={() => setShowResultsPanel(true)}/>
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
       <MapContainer center={mapCenter} zoom={14} zoomControl={false} className="map-container">
         <TileLayer
@@ -171,7 +200,16 @@ function App() {
         />
 
         <FlyToPlace place={selectedPlace} />
-
+        {showResultsPanel && (
+        <SearchPanel
+          places={filteredPlaces}
+          selectedPlace={selectedPlace}
+          setSelectedPlace={setSelectedPlace}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          onClose={() => setShowResultsPanel(false)}
+        />
+      )}
         {PLACES.map((place) => (
           <Marker
             key={place.id}
