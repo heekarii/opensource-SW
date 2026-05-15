@@ -1,0 +1,31 @@
+package com.example.backend.user.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+@Schema(description = "회원가입 요청")
+public record SignupRequest(
+
+        @Schema(description = "이메일", example = "user@example.com")
+        @NotBlank(message = "email is required.")
+        @Email(message = "email format is invalid.")
+        @Size(max = 100, message = "email must be 100 characters or less.")
+        String email,
+
+        @Schema(description = "비밀번호", example = "password1234")
+        @NotBlank(message = "password is required.")
+        @Size(min = 8, max = 100, message = "password must be between 8 and 100 characters.")
+        String password,
+
+        @Schema(description = "닉네임", example = "reviewer")
+        @NotBlank(message = "nickname is required.")
+        @Size(max = 50, message = "nickname must be 50 characters or less.")
+        String nickname,
+
+        @Schema(description = "프로필 이미지 URL", example = "https://example.com/profile.png")
+        @Size(max = 255, message = "profileImageUrl must be 255 characters or less.")
+        String profileImageUrl
+) {
+}
