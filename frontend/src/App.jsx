@@ -3,6 +3,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './App.css';
+import { Search, Home, Heart, User, MessageSquareText } from 'lucide-react';
 
 const CATEGORY_STYLE = {
   korean: {
@@ -103,14 +104,66 @@ function FlyToPlace({ place }) {
   return null;
 }
 
+function Sidebar({ activeMenu, setActiveMenu }) {
+  const menus = [
+    { id: 'home', label: 'Home', icon: Home },
+    { id: 'explore', label: 'Explore', icon: Search },
+    { id: 'favorites', label: 'Favorites', icon: Heart },
+    { id: 'reviews', label: 'My Reviews', icon: MessageSquareText },
+    { id: 'profile', label: 'Profile', icon: User },
+  ];
+
+  return (
+    <aside className="fixed left-0 top-0 z-[700] hidden h-screen w-[230px] shrink-0 flex-col border-r border-zinc-200/80 bg-white/90 px-4 py-5 shadow-xl backdrop-blur-xl lg:flex">
+      <div className="mb-8 px-2 text-2xl font-black tracking-tight text-orange-600">Fork & Cup</div>
+
+      <nav className="space-y-2">
+        {menus.map((menu) => {
+          const Icon = menu.icon;
+          const active = activeMenu === menu.id;
+
+          return (
+            <button
+              key={menu.id}
+              onClick={() => setActiveMenu(menu.id)}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                active
+                  ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
+                  : 'text-zinc-500 hover:bg-orange-50 hover:text-orange-600'
+              }`}
+            >
+              <Icon size={18} />
+              {menu.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="mt-auto rounded-2xl bg-zinc-100 p-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-11 w-11 place-items-center rounded-full bg-orange-100 text-sm font-black text-orange-700">
+            AE
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-zinc-800">Alex Explorer</p>
+            <p className="text-xs text-zinc-500">Gold Member</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 const DEFAULT_CENTER = [37.5234, 127.0469];
 
 function App() {
   const [selectedPlace, setSelectedPlace] = useState(PLACES[0] ?? null);
+  const [activeMenu, setActiveMenu] = useState('home');
   const mapCenter = selectedPlace?.position ?? DEFAULT_CENTER;
 
   return (
     <main className="map-page">
+      <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
       <MapContainer center={mapCenter} zoom={14} zoomControl={false} className="map-container">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
