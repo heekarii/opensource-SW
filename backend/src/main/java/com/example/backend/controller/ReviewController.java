@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,21 @@ public class ReviewController {
         restaurant.setId(restaurantId);
 
         review.setRestaurant(restaurant);
+
+        return reviewRepository.save(review);
+    }
+
+    @PutMapping("/{id}")
+    public Review updateReview(
+            @PathVariable Long id,
+            @RequestBody Review updatedReview
+    ) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow();
+
+        review.setUserName(updatedReview.getUserName());
+        review.setRating(updatedReview.getRating());
+        review.setContent(updatedReview.getContent());
 
         return reviewRepository.save(review);
     }
