@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,5 +55,11 @@ public class ReviewController {
         review.setContent(updatedReview.getContent());
 
         return reviewRepository.save(review);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteReview(@PathVariable Long id) {
+        reviewRepository.deleteById(id);
+        return "Review deleted successfully";
     }
 }
