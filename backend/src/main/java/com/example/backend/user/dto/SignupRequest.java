@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * 회원가입 시 클라이언트로부터 전달받는 요청 데이터(DTO)입니다.
+ */
 @Schema(description = "회원가입 요청")
 public record SignupRequest(
 

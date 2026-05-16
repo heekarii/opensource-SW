@@ -14,6 +14,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * 데이터베이스의 users 테이블과 매핑되는 사용자 엔티티 클래스입니다.
+ */
 @Getter
 @Entity
 @Table(name = "users")
@@ -52,6 +55,15 @@ public class User {
         this.profileImageUrl = profileImageUrl;
     }
 
+    /**
+     * 새로운 사용자(User) 객체를 생성하는 팩토리 메서드입니다.
+     * 
+     * @param email 사용자 이메일
+     * @param encodedPassword 암호화된 비밀번호
+     * @param nickname 사용자 닉네임
+     * @param profileImageUrl 프로필 이미지 URL
+     * @return 생성된 사용자 객체
+     */
     public static User create(String email, String encodedPassword, String nickname, String profileImageUrl) {
         return new User(email, encodedPassword, nickname, profileImageUrl);
     }
