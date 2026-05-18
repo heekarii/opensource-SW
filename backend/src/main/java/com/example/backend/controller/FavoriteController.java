@@ -56,4 +56,17 @@ public class FavoriteController {
         // 해당 사용자의 찜 목록 반환
         return favoriteRepository.findByUserId(userId);
     }
+
+
+    @GetMapping("/favorites/check")
+    public boolean checkFavorite(
+        @RequestParam Long userId,
+        @RequestParam Long restaurantId
+) {
+
+    return favoriteRepository
+            .findByUserIdAndRestaurantId(userId, restaurantId)
+            .isPresent();
 }
+}
+
