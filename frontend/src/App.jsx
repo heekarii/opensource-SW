@@ -334,6 +334,15 @@ function App() {
     });
   }, [query, categoryFilter]);
 
+  useEffect(() => {
+    if (
+      filteredPlaces.length > 0 &&
+      !filteredPlaces.some((place) => place.id === selectedPlace?.id)
+    ) {
+      setSelectedPlace(filteredPlaces[0]);
+    }
+  }, [filteredPlaces, selectedPlace]);
+
   return (
     <main className="map-page">
       <TopSearch
@@ -341,7 +350,9 @@ function App() {
         setQuery={setQuery}
         onOpenResults={() => setShowResultsPanel(true)}
       />
+
       <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
+
       <MapContainer center={mapCenter} zoom={14} zoomControl={false} className="map-container">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -349,17 +360,8 @@ function App() {
         />
 
         <FlyToPlace place={selectedPlace} />
-        {showResultsPanel && (
-          <SearchPanel
-            places={filteredPlaces}
-            selectedPlace={selectedPlace}
-            setSelectedPlace={setSelectedPlace}
-            categoryFilter={categoryFilter}
-            setCategoryFilter={setCategoryFilter}
-            onClose={() => setShowResultsPanel(false)}
-          />
-        )}
-        {PLACES.map((place) => (
+
+        {filteredPlaces.map((place) => (
           <Marker
             key={place.id}
             position={place.position}
@@ -379,6 +381,17 @@ function App() {
           </Marker>
         ))}
       </MapContainer>
+
+      {showResultsPanel && (
+        <SearchPanel
+          places={filteredPlaces}
+          selectedPlace={selectedPlace}
+          setSelectedPlace={setSelectedPlace}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+          onClose={() => setShowResultsPanel(false)}
+        />
+      )}
     </main>
   );
 }
