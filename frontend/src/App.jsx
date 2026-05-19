@@ -511,6 +511,15 @@ function DetailPanel({ place, onReview }) {
     </aside>
   );
 }
+function MapControls() {
+  return (
+    <div className="absolute bottom-6 right-[400px] z-[450] hidden flex-col gap-3 lg:flex">
+      <button className="grid h-12 w-12 place-items-center rounded-full bg-white text-orange-600 shadow-xl transition hover:scale-105">
+        <Navigation size={19} />
+      </button>
+    </div>
+  );
+}
 
 const DEFAULT_CENTER = [37.5234, 127.0469];
 
@@ -584,6 +593,8 @@ function App() {
           </Marker>
         ))}
       </MapContainer>
+      <div className="pointer-events-none absolute inset-0 z-[300] bg-gradient-to-r from-white/55 via-transparent to-white/35" />
+
 
       {showResultsPanel && (
         <SearchPanel
@@ -597,8 +608,35 @@ function App() {
       )}
 
       <DetailPanel place={selectedPlace} onReview={() => setReviewOpen(true)} />
+      <MapControls />
       <ReviewModal place={selectedPlace} open={reviewOpen} onClose={() => setReviewOpen(false)} />
+      {selectedPlace && (
+  <div className="absolute bottom-4 left-4 right-4 z-[460] rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur lg:hidden">
+    <div className="flex items-center gap-4">
+      <img
+        src={selectedPlace.image}
+        alt={selectedPlace.name}
+        className="h-20 w-24 rounded-2xl object-cover"
+      />
 
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-lg font-black">{selectedPlace.name}</h3>
+
+        <div className="mt-1 flex items-center gap-2 text-sm text-zinc-500">
+          <RatingStars value={selectedPlace.rating} size={13} />
+          <span>{selectedPlace.rating}</span>
+        </div>
+
+        <button
+          onClick={() => setReviewOpen(true)}
+          className="mt-3 rounded-xl bg-orange-500 px-4 py-2 text-sm font-black text-white"
+        >
+          Write Review
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </main>
   );
 }
