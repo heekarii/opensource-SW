@@ -11,11 +11,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     // 1. 식당 이름으로 검색 (대소문자 구분 없이, 부분 일치, 한글 지원)
     List<Restaurant> findByNameContainingIgnoreCase(String keyword);
 
-    // 2. 카테고리로 검색 (예: '한식', '중식' 등 정확히 일치하는 카테고리)
-    List<Restaurant> findByCategory(String category);
+    // 2. 카테고리 이름으로 검색
+    List<Restaurant> findByCategoryName(String categoryName);
 
-    // 3. 식당 이름과 카테고리로 동시 검색 (예: 카테고리가 '한식'이면서 이름에 '국밥'이 들어간 식당)
-    List<Restaurant> findByNameContainingIgnoreCaseAndCategory(String keyword, String category);
+    // 3. 식당 이름과 카테고리 이름으로 동시 검색
+    List<Restaurant> findByNameContainingIgnoreCaseAndCategoryName(String keyword, String categoryName);
 
     // 4. 특정 메뉴 이름이 포함된 식당 검색 
     // (JOIN을 사용하여 Menu 엔티티의 name 필드를 검색하고, 중복된 식당은 DISTINCT로 제거합니다.)

@@ -63,7 +63,10 @@ public class ReviewController {
         Review review = new Review();
         review.setRestaurant(restaurant);
         review.setContent(request.content());
-        review.setRating(request.rating());
+        review.setTasteScore(request.tasteScore());
+        review.setPriceScore(request.priceScore());
+        review.setServiceScore(request.serviceScore());
+        review.setImageUrl(request.imageUrl());
 
         // [버그 픽스] 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
         User user = userRepository.findById(request.userId())
@@ -98,9 +101,11 @@ public class ReviewController {
         }
 
         // 리뷰 내용을 업데이트합니다.
-        // userName은 더 이상 사용하지 않으므로 업데이트 항목에서 제외합니다.
-        review.setRating(updatedReview.getRating());
+        review.setTasteScore(updatedReview.getTasteScore());
+        review.setPriceScore(updatedReview.getPriceScore());
+        review.setServiceScore(updatedReview.getServiceScore());
         review.setContent(updatedReview.getContent());
+        review.setImageUrl(updatedReview.getImageUrl());
 
         // 수정된 리뷰를 데이터베이스에 저장하고 반환합니다.
         return reviewRepository.save(review);

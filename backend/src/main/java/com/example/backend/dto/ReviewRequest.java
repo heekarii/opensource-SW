@@ -13,14 +13,26 @@ public record ReviewRequest(
         @NotNull(message = "userId is required.")
         Long userId,
 
-        @Schema(description = "별점 (1~5)", example = "5")
-        @NotNull(message = "rating is required.")
-        @Min(1)
-        @Max(5)
-        Integer rating,
+        @Schema(description = "맛 별점 (1~5)", example = "5")
+        @NotNull(message = "tasteScore is required.")
+        @Min(1) @Max(5)
+        Integer tasteScore,
+
+        @Schema(description = "가성비 별점 (1~5)", example = "4")
+        @NotNull(message = "priceScore is required.")
+        @Min(1) @Max(5)
+        Integer priceScore,
+
+        @Schema(description = "서비스/친절도 별점 (1~5)", example = "5")
+        @NotNull(message = "serviceScore is required.")
+        @Min(1) @Max(5)
+        Integer serviceScore,
 
         @Schema(description = "리뷰 내용", example = "너무 맛있어요! 강력 추천합니다.")
         @NotBlank(message = "content is required.")
-        String content
+        String content,
+        
+        @Schema(description = "리뷰 이미지 URL", example = "https://example.com/image.jpg")
+        String imageUrl
 ) {
 }

@@ -14,10 +14,14 @@ public class RestaurantResponse {
 
     private Long id;                // 식당 고유 식별자
     private String name;            // 식당 이름
-    private String category;        // 식당 카테고리
+    private String category;        // 식당 카테고리 이름
     private String address;         // 식당 주소
+    private String phone;           // 식당 전화번호
+    private String description;     // 식당 설명
     private Double latitude;        // 식당 위도
     private Double longitude;       // 식당 경도
+    private String openingHours;    // 영업 시간
+    private String imageUrl;        // 식당 이미지 URL
     private Double averageRating;   // 식당 평균 평점
     private Long reviewCount;       // 식당 리뷰 개수
 
@@ -37,10 +41,14 @@ public class RestaurantResponse {
         return new RestaurantResponse(
                 restaurant.getId(),
                 restaurant.getName(),
-                restaurant.getCategory(),
+                restaurant.getCategory() != null ? restaurant.getCategory().getName() : null,
                 restaurant.getAddress(),
+                restaurant.getPhone(),
+                restaurant.getDescription(),
                 restaurant.getLatitude(),
                 restaurant.getLongitude(),
+                restaurant.getOpeningHours(),
+                restaurant.getImageUrl(),
                 averageRating == null ? 0.0 : averageRating,
                 reviewCount
         );
