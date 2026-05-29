@@ -69,13 +69,13 @@ public class RestaurantController {
             restaurants = restaurantRepository.findByMenuNameContainingIgnoreCase(menuName);
         } else if (hasKeyword && hasCategory) {
             // 2. 이름과 카테고리 둘 다 검색
-            restaurants = restaurantRepository.findByNameContainingIgnoreCaseAndCategory(keyword, category);
+            restaurants = restaurantRepository.findByNameContainingIgnoreCaseAndCategoryName(keyword, category);
         } else if (hasKeyword) {
             // 3. 이름으로만 검색
             restaurants = restaurantRepository.findByNameContainingIgnoreCase(keyword);
         } else if (hasCategory) {
             // 4. 카테고리로만 검색
-            restaurants = restaurantRepository.findByCategory(category);
+            restaurants = restaurantRepository.findByCategoryName(category);
         } else {
             // 5. 검색 파라미터가 하나도 없으면 전체 식당 반환
             restaurants = restaurantRepository.findAll();
