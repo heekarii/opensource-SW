@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 데이터베이스의 restaurants 테이블과 매핑되는 예비 식당 엔티티 클래스입니다.
+ */
 @Entity
 @Table(name = "restaurants")
 @Getter
