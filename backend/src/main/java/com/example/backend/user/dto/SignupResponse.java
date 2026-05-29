@@ -5,13 +5,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
+/**
+ * 회원가입 성공 시 클라이언트에게 반환하는 응답 데이터(DTO)입니다.
+ */
 @Schema(description = "회원가입 응답")
 public record SignupResponse(
 
         @Schema(description = "사용자 ID", example = "1")
         Long userId,
 
-        @Schema(description = "이메일", example = "user@example.com")
+        @Schema(description = "이메일 (로그인 아이디)", example = "user@example.com")
         String email,
 
         @Schema(description = "닉네임", example = "reviewer")
@@ -24,6 +27,12 @@ public record SignupResponse(
         LocalDateTime createdAt
 ) {
 
+    /**
+     * User 엔티티를 SignupResponse DTO로 변환하는 정적 팩토리 메서드입니다.
+     * 
+     * @param user 변환할 사용자 엔티티
+     * @return 변환된 SignupResponse 객체
+     */
     public static SignupResponse from(User user) {
         return new SignupResponse(
                 user.getUserId(),
