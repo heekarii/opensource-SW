@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.ReviewRequest;
+import com.example.backend.dto.ReviewWithRestaurantRequest;
 import com.example.backend.entity.Restaurant;
 import com.example.backend.entity.Review;
 import com.example.backend.repository.ReviewRepository;
@@ -69,6 +70,40 @@ public class ReviewController {
         review.setImageUrl(request.imageUrl());
 
         // [버그 픽스] 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        review.setUser(user);
+
+        // 리뷰를 데이터베이스에 저장하고 반환합니다.
+        return reviewRepository.save(review);
+    }
+
+    /**
+     * 식당 아이디와 유저 아이디를 모두 Body(JSON)로 받아서 새로운 리뷰를 생성합니다.
+     * 프론트엔드의 편의를 위해 추가된 대안(Alternative) API입니다.
+     * URL: POST /reviews
+     * 
+     * @param request 생성할 리뷰 정보 (식당ID, 유저ID 모두 포함)
+     * @return 저장된 리뷰 객체
+     */
+    @PostMapping
+    public Review createReviewWithBody(
+            @RequestBody ReviewWithRestaurantRequest request
+    ) {
+        // 식당 객체를 생성하고 식별자를 설정합니다.
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(request.restaurantId());
+
+        // 프론트엔드에서 전달받은 데이터를 바탕으로 리뷰 객체를 생성합니다.
+        Review review = new Review();
+        review.setRestaurant(restaurant);
+        review.setContent(request.content());
+        review.setTasteScore(request.tasteScore());
+        review.setPriceScore(request.priceScore());
+        review.setServiceScore(request.serviceScore());
+        review.setImageUrl(request.imageUrl());
+
+        // 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         review.setUser(user);
