@@ -14,7 +14,7 @@ public record SignupResponse(
         @Schema(description = "사용자 ID", example = "1")
         Long userId,
 
-        @Schema(description = "이메일", example = "user@example.com")
+        @Schema(description = "이메일 (로그인 아이디)", example = "user@example.com")
         String email,
 
         @Schema(description = "닉네임", example = "reviewer")
