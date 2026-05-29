@@ -15,6 +15,8 @@ import com.example.backend.dto.ReviewRequest;
 import com.example.backend.entity.Restaurant;
 import com.example.backend.entity.Review;
 import com.example.backend.repository.ReviewRepository;
+import com.example.backend.user.domain.User;
+import com.example.backend.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ReviewController {
 
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     /**
      * 특정 식당의 리뷰 목록을 조회합니다.
@@ -60,6 +63,11 @@ public class ReviewController {
         review.setRestaurant(restaurant);
         review.setContent(request.content());
         review.setRating(request.rating());
+
+        // [버그 픽스] 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+        review.setUser(user);
 
         // 리뷰를 데이터베이스에 저장하고 반환합니다.
         return reviewRepository.save(review);
