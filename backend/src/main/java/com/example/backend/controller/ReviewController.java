@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.dto.ReviewRequest;
@@ -77,17 +78,24 @@ public class ReviewController {
      * 기존 리뷰를 수정합니다.
      * 
      * @param id 수정할 리뷰의 식별자
+     * @param userId 수정을 요청하는 유저의 식별자
      * @param updatedReview 수정할 리뷰 내용 (JSON 요청 본문)
      * @return 수정 완료된 리뷰 객체
      */
     @PutMapping("/{id}")
     public Review updateReview(
             @PathVariable Long id,
+            @RequestParam Long userId,
             @RequestBody Review updatedReview
     ) {
         // 기존 리뷰를 데이터베이스에서 조회하며, 없을 경우 예외를 발생시킵니다.
         Review review = reviewRepository.findById(id)
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 리뷰입니다."));
+
+        // 작성자 권한 검증: 요청한 유저가 실제 리뷰 작성자인지 확인합니다.
+        if (!review.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 리뷰만 수정할 수 있습니다.");
+        }
 
         // 리뷰 내용을 업데이트합니다.
         // userName은 더 이상 사용하지 않으므로 업데이트 항목에서 제외합니다.
@@ -102,12 +110,25 @@ public class ReviewController {
      * 특정 리뷰를 삭제합니다.
      * 
      * @param id 삭제할 리뷰의 식별자
+     * @param userId 삭제를 요청하는 유저의 식별자
      * @return 삭제 완료 메시지
      */
     @DeleteMapping("/{id}")
-    public String deleteReview(@PathVariable Long id) {
-        // 해당 식별자의 리뷰를 데이터베이스에서 삭제합니다.
-        reviewRepository.deleteById(id);
+    public String deleteReview(
+            @PathVariable Long id,
+            @RequestParam Long userId
+    ) {
+        // 기존 리뷰를 데이터베이스에서 조회합니다.
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 리뷰입니다."));
+
+        // 작성자 권한 검증: 요청한 유저가 실제 리뷰 작성자인지 확인합니다.
+        if (!review.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 리뷰만 삭제할 수 있습니다.");
+        }
+
+        // 해당 리뷰를 데이터베이스에서 삭제합니다.
+        reviewRepository.delete(review);
         return "Review deleted successfully";
     }
 }
