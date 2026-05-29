@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.dto.ReviewRequest;
 import com.example.backend.entity.Restaurant;
 import com.example.backend.entity.Review;
 import com.example.backend.repository.ReviewRepository;
@@ -42,20 +43,23 @@ public class ReviewController {
      * 특정 식당에 새로운 리뷰를 생성합니다.
      * 
      * @param restaurantId 리뷰를 작성할 식당의 식별자
-     * @param review 생성할 리뷰 정보 (JSON 요청 본문)
+     * @param request 생성할 리뷰 정보 (프론트엔드 JSON 요청 본문)
      * @return 저장된 리뷰 객체
      */
     @PostMapping("/{restaurantId}")
     public Review createReview(
             @PathVariable Long restaurantId,
-            @RequestBody Review review
+            @RequestBody ReviewRequest request
     ) {
         // 식당 객체를 생성하고 식별자를 설정합니다.
         Restaurant restaurant = new Restaurant();
         restaurant.setId(restaurantId);
 
-        // 리뷰에 식당 정보를 연결합니다.
+        // 프론트엔드에서 전달받은 데이터를 바탕으로 리뷰 객체를 생성합니다.
+        Review review = new Review();
         review.setRestaurant(restaurant);
+        review.setContent(request.content());
+        review.setRating(request.rating());
 
         // 리뷰를 데이터베이스에 저장하고 반환합니다.
         return reviewRepository.save(review);
@@ -78,7 +82,7 @@ public class ReviewController {
                 .orElseThrow();
 
         // 리뷰 내용을 업데이트합니다.
-        review.setUserName(updatedReview.getUserName());
+        // userName은 더 이상 사용하지 않으므로 업데이트 항목에서 제외합니다.
         review.setRating(updatedReview.getRating());
         review.setContent(updatedReview.getContent());
 
