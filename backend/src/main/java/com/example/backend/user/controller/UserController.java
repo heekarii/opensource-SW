@@ -1,5 +1,7 @@
 package com.example.backend.user.controller;
 
+import com.example.backend.user.dto.LoginRequest;
+import com.example.backend.user.dto.LoginResponse;
 import com.example.backend.user.dto.SignupRequest;
 import com.example.backend.user.dto.SignupResponse;
 import com.example.backend.user.service.UserService;
@@ -57,5 +59,18 @@ public class UserController {
 
         // 생성됨(201) 상태 코드와 함께 결과를 반환합니다.
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * 로그인 요청을 처리합니다.
+     * 
+     * @param request 로그인 요청 데이터 (이메일, 비밀번호)
+     * @return 발급된 JWT 토큰 및 유저 정보
+     */
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인하여 JWT 토큰을 발급받습니다.")
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

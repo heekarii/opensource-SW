@@ -17,6 +17,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     /**
+     * 주어진 이메일로 사용자를 조회합니다.
+     * 
+     * @param email 조회할 이메일
+     * @return 찾은 사용자 (Optional)
+     */
+    java.util.Optional<User> findByEmail(String email);
+
+    /**
      * 주어진 닉네임을 가진 사용자가 존재하는지 확인합니다.
      * 
      * @param nickname 확인할 닉네임

@@ -58,7 +58,7 @@ public class User {
     /**
      * 새로운 사용자(User) 객체를 생성하는 팩토리 메서드입니다.
      * 
-     * @param email 사용자 이메일
+     * @param email 사용자 이메일 (로그인 아이디)
      * @param encodedPassword 암호화된 비밀번호
      * @param nickname 사용자 닉네임
      * @param profileImageUrl 프로필 이미지 URL
