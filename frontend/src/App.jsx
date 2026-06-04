@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { PLACES } from './data/places';
 import { CATEGORY_STYLE } from './constants/categories';
 
+import SignupModal from "./components/SignupModal";
 import Sidebar from './components/Sidebar';
 import TopSearch from './components/TopSearch';
 import MapView from './components/MapView';
@@ -20,6 +21,7 @@ export default function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
   const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
 
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -165,11 +167,29 @@ export default function App() {
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
         onLogin={() => {
-          setIsLoggedIn(true);
-          setLoginOpen(false);
-          setActiveMenu('home');
-        }}
+        setIsLoggedIn(true);
+        setLoginOpen(false);
+        setActiveMenu("home");
+      }}
+        onOpenSignup={() => {
+        setLoginOpen(false);
+        setSignupOpen(true);
+      }}
       />
+
+      <SignupModal
+  open={signupOpen}
+  onClose={() => setSignupOpen(false)}
+  onSignup={() => {
+    setIsLoggedIn(true);
+    setSignupOpen(false);
+    setActiveMenu("home");
+  }}
+  onOpenLogin={() => {
+    setSignupOpen(false);
+    setLoginOpen(true);
+  }}
+/>
 
       {activeMenu !== 'explore' && (
         <UserPanel
