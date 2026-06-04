@@ -31,8 +31,13 @@ export default function App() {
   const [myReviews, setMyReviews] = useState([]);
 
   useEffect(() => {
+    console.log('여기 실행됨');
+
     fetch('https://opensource-sw.onrender.com/restaurants')
-      .then((res) => res.json())
+      .then((res) => {
+        console.log('응답 도착:', res);
+        return res.json();
+      })
       .then((data) => {
         console.log('식당 목록:', data);
       })
@@ -94,6 +99,8 @@ export default function App() {
 
     setMyReviews((prev) => [newReview, ...prev]);
   };
+
+  console.log('App 렌더링');
 
   return (
     <main className="relative h-screen w-screen overflow-hidden bg-zinc-100 font-sans text-zinc-900">
