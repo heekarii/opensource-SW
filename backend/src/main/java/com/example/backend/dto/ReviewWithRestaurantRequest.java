@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * 특정 식당의 리뷰를 생성할 때 식당 ID와 유저 ID를 모두 포함하는 요청 DTO입니다.
+ * URL 경로(Path) 없이, 오직 JSON Body만으로 
+ * 유저 ID와 식당 ID를 동시에 받아서 리뷰를 생성하기 위한 DTO입니다.
  */
 @Schema(description = "식당 ID를 포함한 리뷰 작성 요청 데이터")
 public record ReviewWithRestaurantRequest(
