@@ -15,11 +15,14 @@ import LoginModal from './components/LoginModal';
 import LoginRequiredPopup from './components/LoginRequiredPopup';
 import UserPanel from './components/UserPanel';
 
+const API_BASE_URL = 'http://localhost:7000';
+
 export default function App() {
   const [query, setQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState('explore');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
@@ -31,6 +34,88 @@ export default function App() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const savedUser = localStorage.getItem('user');
+    if (token && savedUser) {
+      setIsLoggedIn(true);
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    setActiveMenu('explore');
+  };
+
+  const handleLogin = async ({ email, password }) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || errorData.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      }
+
+      const data = await res.json();
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('user', JSON.stringify({
+        userId: data.userId,
+        email: data.email,
+        nickname: data.nickname
+      }));
+      setIsLoggedIn(true);
+      setUser({
+        userId: data.userId,
+        email: data.email,
+        nickname: data.nickname
+      });
+      setLoginOpen(false);
+      setActiveMenu('home');
+    } catch (err) {
+      console.error('로그인 에러:', err);
+      alert(err.message);
+    }
+  };
+
+  const handleSignup = async ({ nickname, email, password }) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/users/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nickname,
+          email,
+          password,
+          profileImageUrl: ''
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || errorData.message || '회원가입에 실패했습니다.');
+      }
+
+      alert('회원가입이 완료되었습니다! 로그인해주세요.');
+      setSignupOpen(false);
+      setLoginOpen(true);
+    } catch (err) {
+      console.error('회원가입 에러:', err);
+      alert(err.message);
+    }
+  };
 
   useEffect(() => {
     console.log('여기 실행됨');
@@ -112,10 +197,7 @@ export default function App() {
         isLoggedIn={isLoggedIn}
         onRequireLogin={requireLogin}
         onOpenLogin={() => setLoginOpen(true)}
-        onLogout={() => {
-          setIsLoggedIn(false);
-          setActiveMenu('explore');
-        }}
+        onLogout={handleLogout}
       />
 
       <TopSearch
@@ -166,30 +248,22 @@ export default function App() {
       <LoginModal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
-        onLogin={() => {
-        setIsLoggedIn(true);
-        setLoginOpen(false);
-        setActiveMenu("home");
-      }}
+        onLogin={handleLogin}
         onOpenSignup={() => {
-        setLoginOpen(false);
-        setSignupOpen(true);
-      }}
+          setLoginOpen(false);
+          setSignupOpen(true);
+        }}
       />
 
       <SignupModal
-  open={signupOpen}
-  onClose={() => setSignupOpen(false)}
-  onSignup={() => {
-    setIsLoggedIn(true);
-    setSignupOpen(false);
-    setActiveMenu("home");
-  }}
-  onOpenLogin={() => {
-    setSignupOpen(false);
-    setLoginOpen(true);
-  }}
-/>
+        open={signupOpen}
+        onClose={() => setSignupOpen(false)}
+        onSignup={handleSignup}
+        onOpenLogin={() => {
+          setSignupOpen(false);
+          setLoginOpen(true);
+        }}
+      />
 
       {activeMenu !== 'explore' && (
         <UserPanel
@@ -198,16 +272,14 @@ export default function App() {
           favoriteIds={favoriteIds}
           myReviews={myReviews}
           isLoggedIn={isLoggedIn}
+          user={user}
           onSelectPlace={(place) => {
             setSelectedPlace(place);
             setActiveMenu('explore');
           }}
           onOpenExplore={() => setActiveMenu('explore')}
           onOpenLogin={() => setLoginOpen(true)}
-          onLogout={() => {
-            setIsLoggedIn(false);
-            setActiveMenu('explore');
-          }}
+          onLogout={handleLogout}
         />
       )}
     </main>
