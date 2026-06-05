@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { X, Mail, Lock, User, UserPlus } from "lucide-react";
 
 export default function SignupModal({ open, onClose, onSignup, onOpenLogin }) {
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   if (!open) return null;
 
   return (
@@ -32,6 +37,8 @@ export default function SignupModal({ open, onClose, onSignup, onOpenLogin }) {
             <input
               type="text"
               placeholder="이름을 입력하세요"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
               className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
             />
           </div>
@@ -47,6 +54,8 @@ export default function SignupModal({ open, onClose, onSignup, onOpenLogin }) {
             <input
               type="email"
               placeholder="forkcup@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
             />
           </div>
@@ -62,13 +71,15 @@ export default function SignupModal({ open, onClose, onSignup, onOpenLogin }) {
             <input
               type="password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
             />
           </div>
         </label>
 
         <button
-          onClick={onSignup}
+          onClick={() => onSignup({ nickname, email, password })}
           className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 text-sm font-black text-white shadow-lg shadow-orange-500/25 transition hover:bg-orange-600"
         >
           <UserPlus size={17} />
@@ -84,10 +95,6 @@ export default function SignupModal({ open, onClose, onSignup, onOpenLogin }) {
             로그인
           </button>
         </div>
-
-        <p className="mt-4 text-center text-xs leading-5 text-zinc-400">
-          현재 화면은 프론트엔드 프로토타입이므로 아무 값이나 입력해도 가입됩니다.
-        </p>
       </div>
     </div>
   );

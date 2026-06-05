@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { X, LogIn, Lock, Mail } from "lucide-react";
 
 export default function LoginModal({ open, onClose, onLogin, onOpenSignup }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   if (!open) return null;
 
   return (
@@ -32,6 +36,8 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignup }) {
             <input
               type="email"
               placeholder="forkcup@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
             />
           </div>
@@ -47,13 +53,15 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignup }) {
             <input
               type="password"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-sm font-medium outline-none placeholder:text-zinc-400"
             />
           </div>
         </label>
 
         <button
-          onClick={onLogin}
+          onClick={() => onLogin({ email, password })}
           className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 text-sm font-black text-white shadow-lg shadow-orange-500/25 transition hover:bg-orange-600"
         >
           <LogIn size={17} />
@@ -69,10 +77,6 @@ export default function LoginModal({ open, onClose, onLogin, onOpenSignup }) {
             회원가입
           </button>
         </div>
-
-        <p className="mt-4 text-center text-xs leading-5 text-zinc-400">
-          현재 화면은 프론트엔드 프로토타입이므로 아무 값이나 입력해도 로그인됩니다.
-        </p>
       </div>
     </div>
   );
