@@ -15,7 +15,7 @@ import LoginModal from './components/LoginModal';
 import LoginRequiredPopup from './components/LoginRequiredPopup';
 import UserPanel from './components/UserPanel';
 
-const API_BASE_URL = 'http://localhost:7000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:7000';
 
 export default function App() {
   const [query, setQuery] = useState('');
