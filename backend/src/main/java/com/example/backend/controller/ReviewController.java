@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.example.backend.dto.ReviewRequest;
 import com.example.backend.dto.ReviewWithRestaurantRequest;
 import com.example.backend.entity.Restaurant;
@@ -48,13 +50,13 @@ public class ReviewController {
      * 특정 식당에 새로운 리뷰를 생성합니다.
      * 
      * @param restaurantId 리뷰를 작성할 식당의 식별자
-     * @param request 생성할 리뷰 정보 (프론트엔드 JSON 요청 본문)
+     * @param request 생성할 리뷰 정보 (프론트엔드 JSON 요청 본문, 값 검증 적용됨)
      * @return 저장된 리뷰 객체
      */
     @PostMapping("/{restaurantId}")
     public Review createReview(
             @PathVariable Long restaurantId,
-            @RequestBody ReviewRequest request
+            @Valid @RequestBody ReviewRequest request
     ) {
         // 식당 객체를 생성하고 식별자를 설정합니다.
         Restaurant restaurant = new Restaurant();
@@ -69,7 +71,7 @@ public class ReviewController {
         review.setServiceScore(request.serviceScore());
         review.setImageUrl(request.imageUrl());
 
-        // [버그 픽스] 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
+        // 전달받은 userId로 DB에서 실제 User 엔티티를 조회하여 리뷰에 완벽하게 연결합니다.
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
         review.setUser(user);
@@ -83,12 +85,12 @@ public class ReviewController {
      * 프론트엔드의 편의를 위해 추가된 대안(Alternative) API입니다.
      * URL: POST /reviews
      * 
-     * @param request 생성할 리뷰 정보 (식당ID, 유저ID 모두 포함)
+     * @param request 생성할 리뷰 정보 (식당ID, 유저ID 모두 포함, 값 검증 적용됨)
      * @return 저장된 리뷰 객체
      */
     @PostMapping
     public Review createReviewWithBody(
-            @RequestBody ReviewWithRestaurantRequest request
+            @Valid @RequestBody ReviewWithRestaurantRequest request
     ) {
         // 식당 객체를 생성하고 식별자를 설정합니다.
         Restaurant restaurant = new Restaurant();
@@ -117,14 +119,14 @@ public class ReviewController {
      * 
      * @param id 수정할 리뷰의 식별자
      * @param userId 수정을 요청하는 유저의 식별자
-     * @param updatedReview 수정할 리뷰 내용 (JSON 요청 본문)
+     * @param updatedReview 수정할 리뷰 내용 (JSON 요청 본문, 값 검증 적용됨)
      * @return 수정 완료된 리뷰 객체
      */
     @PutMapping("/{id}")
     public Review updateReview(
             @PathVariable Long id,
             @RequestParam Long userId,
-            @RequestBody Review updatedReview
+            @Valid @RequestBody ReviewRequest updatedReview
     ) {
         // 기존 리뷰를 데이터베이스에서 조회하며, 없을 경우 예외를 발생시킵니다.
         Review review = reviewRepository.findById(id)
@@ -135,12 +137,12 @@ public class ReviewController {
             throw new IllegalArgumentException("본인이 작성한 리뷰만 수정할 수 있습니다.");
         }
 
-        // 리뷰 내용을 업데이트합니다.
-        review.setTasteScore(updatedReview.getTasteScore());
-        review.setPriceScore(updatedReview.getPriceScore());
-        review.setServiceScore(updatedReview.getServiceScore());
-        review.setContent(updatedReview.getContent());
-        review.setImageUrl(updatedReview.getImageUrl());
+        // 리뷰 내용을 업데이트합니다. ReviewRequest는 record이므로 getter가 tasteScore() 형태입니다.
+        review.setTasteScore(updatedReview.tasteScore());
+        review.setPriceScore(updatedReview.priceScore());
+        review.setServiceScore(updatedReview.serviceScore());
+        review.setContent(updatedReview.content());
+        review.setImageUrl(updatedReview.imageUrl());
 
         // 수정된 리뷰를 데이터베이스에 저장하고 반환합니다.
         return reviewRepository.save(review);
@@ -171,4 +173,4 @@ public class ReviewController {
         reviewRepository.delete(review);
         return "Review deleted successfully";
     }
-}
+}

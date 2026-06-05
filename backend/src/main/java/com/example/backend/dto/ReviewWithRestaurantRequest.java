@@ -10,32 +10,37 @@ import jakarta.validation.constraints.NotNull;
  * URL 경로(Path) 없이, 오직 JSON Body만으로 
  * 유저 ID와 식당 ID를 동시에 받아서 리뷰를 생성하기 위한 DTO입니다.
  */
+@Schema(description = "식당 ID를 포함한 리뷰 작성 요청 데이터")
 public record ReviewWithRestaurantRequest(
-        @Schema(description = "리뷰 작성자 ID", example = "1")
-        @NotNull(message = "userId is required.")
-        Long userId,
 
-        @Schema(description = "식당 ID", example = "1")
-        @NotNull(message = "restaurantId is required.")
+        @Schema(description = "리뷰를 작성할 식당 ID", example = "1")
+        @NotNull(message = "restaurantId는 필수입니다.")
         Long restaurantId,
 
+        @Schema(description = "작성자 유저 ID", example = "1")
+        @NotNull(message = "userId는 필수입니다.")
+        Long userId,
+
         @Schema(description = "맛 별점 (1~5)", example = "5")
-        @NotNull(message = "tasteScore is required.")
-        @Min(1) @Max(5)
+        @NotNull(message = "맛 별점(tasteScore)은 필수입니다.")
+        @Min(value = 1, message = "별점은 최소 1점이어야 합니다.") 
+        @Max(value = 5, message = "별점은 최대 5점이어야 합니다.")
         Integer tasteScore,
 
         @Schema(description = "가성비 별점 (1~5)", example = "4")
-        @NotNull(message = "priceScore is required.")
-        @Min(1) @Max(5)
+        @NotNull(message = "가성비 별점(priceScore)은 필수입니다.")
+        @Min(value = 1, message = "별점은 최소 1점이어야 합니다.") 
+        @Max(value = 5, message = "별점은 최대 5점이어야 합니다.")
         Integer priceScore,
 
         @Schema(description = "서비스/친절도 별점 (1~5)", example = "5")
-        @NotNull(message = "serviceScore is required.")
-        @Min(1) @Max(5)
+        @NotNull(message = "서비스 별점(serviceScore)은 필수입니다.")
+        @Min(value = 1, message = "별점은 최소 1점이어야 합니다.") 
+        @Max(value = 5, message = "별점은 최대 5점이어야 합니다.")
         Integer serviceScore,
 
         @Schema(description = "리뷰 내용", example = "너무 맛있어요! 강력 추천합니다.")
-        @NotBlank(message = "content is required.")
+        @NotBlank(message = "리뷰 내용(content)은 필수입니다.")
         String content,
         
         @Schema(description = "리뷰 이미지 URL", example = "https://example.com/image.jpg")
