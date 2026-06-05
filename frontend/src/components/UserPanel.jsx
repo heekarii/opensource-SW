@@ -18,6 +18,7 @@ export default function UserPanel({
   favoriteIds,
   myReviews,
   isLoggedIn,
+  user,
   onSelectPlace,
   onOpenExplore,
   onOpenLogin,
@@ -52,6 +53,7 @@ export default function UserPanel({
 
       {activeMenu === "profile" && (
         <ProfilePanel
+          user={user}
           favoriteCount={favoriteIds.length}
           reviewCount={myReviews.length}
           onLogout={onLogout}
@@ -206,7 +208,10 @@ function MyReviewsPanel({ myReviews, onOpenExplore }) {
   );
 }
 
-function ProfilePanel({ favoriteCount, reviewCount, onLogout }) {
+function ProfilePanel({ user, favoriteCount, reviewCount, onLogout }) {
+  const nickname = user?.nickname || "사용자";
+  const initial = nickname.slice(0, 2).toUpperCase();
+
   return (
     <div>
       <div className="mb-6">
@@ -222,12 +227,12 @@ function ProfilePanel({ favoriteCount, reviewCount, onLogout }) {
       <div className="mb-6 rounded-3xl bg-orange-50 p-5 ring-1 ring-orange-100">
         <div className="mb-4 flex items-center gap-4">
           <div className="grid h-16 w-16 place-items-center rounded-full bg-orange-500 text-xl font-black text-white">
-            AE
+            {initial}
           </div>
 
           <div>
-            <h3 className="text-xl font-black text-zinc-900">Alex Explorer</h3>
-            <p className="text-sm font-semibold text-zinc-500">Gold Member</p>
+            <h3 className="text-xl font-black text-zinc-900">{nickname}</h3>
+            <p className="text-sm font-semibold text-zinc-500">{user?.email || "Fork & Cup 회원"}</p>
           </div>
         </div>
 
