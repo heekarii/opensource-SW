@@ -4,6 +4,7 @@ export default function Sidebar({
   activeMenu,
   setActiveMenu,
   isLoggedIn,
+  user,
   onRequireLogin,
   onOpenLogin,
   onLogout,
@@ -68,12 +69,12 @@ export default function Sidebar({
           <>
             <div className="mb-3 flex items-center gap-3">
               <div className="grid h-11 w-11 place-items-center rounded-full bg-orange-100 text-sm font-black text-orange-700">
-                AE
+                {user?.nickname ? user.nickname.slice(0, 2).toUpperCase() : "US"}
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-zinc-800">Alex Explorer</p>
-                <p className="text-xs text-zinc-500">Gold Member</p>
+                <p className="truncate text-sm font-bold text-zinc-800">{user?.nickname || "사용자"}</p>
+                <p className="truncate text-xs text-zinc-500">{user?.email || "Fork & Cup 회원"}</p>
               </div>
             </div>
 

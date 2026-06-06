@@ -45,21 +45,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // CORS 설정 적용
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // 과제용이므로 CSRF 보호 비활성화
-            .csrf(AbstractHttpConfigurer::disable)
-            // 세션을 사용하지 않으므로 Stateless 로 설정
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // 엔드포인트 접근 권한 설정
-            .authorizeHttpRequests(auth -> auth
-                // 로그인, 회원가입, Swagger UI, 식당 목록 조회는 인증 없이 허용
-                .requestMatchers("/api/users/signup", "/api/users/login", "/swagger-ui/**", "/v3/api-docs/**", "/restaurants/**", "/reviews/**").permitAll()
-                // 그 외 모든 요청은 인증 필요
-                .anyRequest().authenticated()
-            )
-            // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // 과제용이므로 CSRF 보호 비활성화
+                .csrf(AbstractHttpConfigurer::disable)
+                // 세션을 사용하지 않으므로 Stateless 로 설정
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 엔드포인트 접근 권한 설정
+                .authorizeHttpRequests(auth -> auth
+                        // 로그인, 회원가입, Swagger UI, 식당 목록 조회는 인증 없이 허용
+                        .requestMatchers("/api/users/signup", "/api/users/login", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/restaurants/**", "/reviews/**")
+                        .permitAll()
+                        // 그 외 모든 요청은 인증 필요
+                        .anyRequest().authenticated())
+                // 커스텀 JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -70,7 +71,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://opensource-sw.vercel.app")); // Vite 개발 서버 및 Vercel 배포 주소
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://opensource-sw.vercel.app",
+                "http://opensource-sw.vercel.app")); // Vite 개발 서버 및 Vercel 배포 주소
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
