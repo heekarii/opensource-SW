@@ -17,12 +17,28 @@ import UserPanel from './components/UserPanel';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:7000';
 
+const mapCategoryToKey = (categoryName) => {
+  switch (categoryName) {
+    case '한식': return 'korean';
+    case '중식': return 'chinese';
+    case '일식': return 'japanese';
+    case '양식': return 'western';
+    case '카페': return 'cafe';
+    default: return 'korean';
+  }
+};
+
+const getTypeFromCategory = (categoryKey) => {
+  return categoryKey === 'cafe' ? 'cafe' : 'restaurant';
+};
+
 export default function App() {
   const [query, setQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState('explore');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [places, setPlaces] = useState(PLACES);
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [loginRequiredOpen, setLoginRequiredOpen] = useState(false);
@@ -118,23 +134,45 @@ export default function App() {
   };
 
   useEffect(() => {
-    console.log('여기 실행됨');
-
-    fetch('https://opensource-sw.onrender.com/restaurants')
+    fetch(`${API_BASE_URL}/restaurants`)
       .then((res) => {
-        console.log('응답 도착:', res);
+        if (!res.ok) {
+          throw new Error('식당 목록을 불러오는 데 실패했습니다.');
+        }
         return res.json();
       })
       .then((data) => {
-        console.log('식당 목록:', data);
+        const mappedData = data.map((item) => {
+          const categoryKey = mapCategoryToKey(item.category);
+          return {
+            id: item.id,
+            name: item.name,
+            type: getTypeFromCategory(categoryKey),
+            category: categoryKey,
+            rating: item.averageRating || 0.0,
+            reviews: item.reviewCount || 0,
+            distance: 0.5,
+            position: [item.latitude, item.longitude],
+            address: item.address,
+            image: item.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
+            description: item.description || '',
+            tags: [],
+            menu: []
+          };
+        });
+
+        if (mappedData.length > 0) {
+          setPlaces(mappedData);
+          setSelectedPlace(mappedData[0]);
+        }
       })
       .catch((err) => {
-        console.error('서버 통신 오류:', err);
+        console.error('식당 목록 로드 오류:', err);
       });
   }, []);
 
   const filteredPlaces = useMemo(() => {
-    return PLACES.filter((place) => {
+    return places.filter((place) => {
       const q = query.trim().toLowerCase();
 
       const matchQuery =
@@ -149,7 +187,7 @@ export default function App() {
 
       return matchQuery && matchCategory;
     });
-  }, [query, categoryFilter]);
+  }, [query, categoryFilter, places]);
 
   const requireLogin = () => {
     setLoginRequiredOpen(true);
@@ -269,7 +307,7 @@ export default function App() {
       {activeMenu !== 'explore' && (
         <UserPanel
           activeMenu={activeMenu}
-          places={PLACES}
+          places={places}
           favoriteIds={favoriteIds}
           myReviews={myReviews}
           isLoggedIn={isLoggedIn}
