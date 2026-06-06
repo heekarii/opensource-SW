@@ -11,7 +11,7 @@ import { CATEGORY_STYLE } from '../constants/categories';
 import RatingStars from './RatingStars';
 
 export default function DetailPanel({ place, isFavorite, onToggleFavorite, onReview }) {
-  const style = CATEGORY_STYLE[place.category];
+  const style = CATEGORY_STYLE[place.category] || CATEGORY_STYLE.korean;
 
   return (
     <aside className="absolute bottom-0 right-0 top-0 z-[440] hidden w-[380px] overflow-y-auto bg-white shadow-2xl lg:block">
@@ -83,7 +83,7 @@ export default function DetailPanel({ place, isFavorite, onToggleFavorite, onRev
           </div>
 
           <div className="space-y-3">
-            {place.menu.map((item) => (
+            {(place.menu || []).map((item) => (
               <div key={item.name} className="flex items-center gap-3 rounded-2xl bg-zinc-50 p-3">
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-white shadow-sm">
                   {place.type === 'cafe' ? (
@@ -108,7 +108,7 @@ export default function DetailPanel({ place, isFavorite, onToggleFavorite, onRev
           <h2 className="mb-3 text-xl font-black text-zinc-900">Recent Reviews</h2>
 
           <div className="space-y-5">
-            {place.reviewsList.map((review) => (
+            {(place.reviewsList || []).map((review) => (
               <article
                 key={`${review.user}-${review.date}`}
                 className="border-b border-zinc-100 pb-4 last:border-none"

@@ -157,7 +157,8 @@ export default function App() {
             image: item.imageUrl || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
             description: item.description || '',
             tags: [],
-            menu: []
+            menu: [],
+            reviewsList: []
           };
         });
 

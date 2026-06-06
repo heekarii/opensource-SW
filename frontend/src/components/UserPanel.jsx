@@ -261,7 +261,7 @@ function ProfilePanel({ user, favoriteCount, reviewCount, onLogout }) {
 }
 
 function PlaceMiniCard({ place, onClick }) {
-  const style = CATEGORY_STYLE[place.category];
+  const style = CATEGORY_STYLE[place.category] || CATEGORY_STYLE.korean;
 
   return (
     <button
