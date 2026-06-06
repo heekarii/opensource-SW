@@ -72,7 +72,10 @@ export default function App() {
           id: r.id,
           placeId: r.restaurant?.id,
           placeName: r.restaurant?.name || '알 수 없는 식당',
-          rating: Math.round(((r.tasteScore || 0) + (r.priceScore || 0) + (r.serviceScore || 0)) / 3),
+          tasteRating: r.tasteScore || 0,
+          serviceRating: r.serviceScore || 0,
+          priceRating: r.priceScore || 0,
+          averageRating: Math.round(((r.tasteScore || 0) + (r.priceScore || 0) + (r.serviceScore || 0)) / 3),
           text: r.content,
           createdAt: new Date(r.createdAt).toLocaleDateString(),
         }));
@@ -329,9 +332,9 @@ export default function App() {
         },
         body: JSON.stringify({
           userId: user.userId,
-          tasteScore: review.rating,
-          priceScore: review.rating,
-          serviceScore: review.rating,
+          tasteScore: review.tasteRating,
+          priceScore: review.priceRating,
+          serviceScore: review.serviceRating,
           content: review.text,
           imageUrl: ''
         }),
@@ -348,7 +351,10 @@ export default function App() {
         id: data.reviewId || Date.now(),
         placeId: review.placeId,
         placeName: review.placeName,
-        rating: review.rating,
+        tasteRating: review.tasteRating,
+        serviceRating: review.serviceRating,
+        priceRating: review.priceRating,
+        averageRating: review.averageRating,
         text: review.text,
         createdAt: new Date().toLocaleDateString(),
       };
