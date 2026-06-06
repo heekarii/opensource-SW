@@ -195,6 +195,7 @@ export default function App() {
         activeMenu={activeMenu}
         setActiveMenu={setActiveMenu}
         isLoggedIn={isLoggedIn}
+        user={user}
         onRequireLogin={requireLogin}
         onOpenLogin={() => setLoginOpen(true)}
         onLogout={handleLogout}
