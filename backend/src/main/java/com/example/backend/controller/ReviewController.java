@@ -47,6 +47,17 @@ public class ReviewController {
     }
 
     /**
+     * 특정 사용자가 작성한 모든 리뷰 목록을 조회합니다.
+     * 
+     * @param userId 리뷰를 조회할 사용자의 식별자
+     * @return 해당 사용자가 작성한 리뷰 목록
+     */
+    @GetMapping("/users/{userId}")
+    public List<Review> getUserReviews(@PathVariable Long userId) {
+        return reviewRepository.findByUserUserId(userId);
+    }
+
+    /**
      * 특정 식당에 새로운 리뷰를 생성합니다.
      * 
      * @param restaurantId 리뷰를 작성할 식당의 식별자
