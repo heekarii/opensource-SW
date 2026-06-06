@@ -265,19 +265,23 @@ export default function App() {
         />
       )}
 
-      <DetailPanel
-        place={selectedPlace}
-        isFavorite={favoriteIds.includes(selectedPlace.id)}
-        onToggleFavorite={handleToggleFavorite}
-        onReview={handleOpenReview}
-      />
+      {selectedPlace && (
+        <DetailPanel
+          place={selectedPlace}
+          isFavorite={favoriteIds.includes(selectedPlace.id)}
+          onToggleFavorite={handleToggleFavorite}
+          onReview={handleOpenReview}
+        />
+      )}
 
-      <ReviewModal
-        place={selectedPlace}
-        open={reviewOpen}
-        onClose={() => setReviewOpen(false)}
-        onSubmit={handleSubmitReview}
-      />
+      {selectedPlace && (
+        <ReviewModal
+          place={selectedPlace}
+          open={reviewOpen}
+          onClose={() => setReviewOpen(false)}
+          onSubmit={handleSubmitReview}
+        />
+      )}
 
       <LoginRequiredPopup
         open={loginRequiredOpen}
