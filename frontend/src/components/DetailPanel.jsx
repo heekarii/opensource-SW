@@ -8,7 +8,7 @@ import {
   Coffee,
 } from 'lucide-react';
 import { CATEGORY_STYLE } from '../constants/categories';
-import RatingStars from './RatingStars';
+import RatingStars from './StarRating';
 
 export default function DetailPanel({ place, isFavorite, onToggleFavorite, onReview }) {
   const style = CATEGORY_STYLE[place.category] || CATEGORY_STYLE.korean;

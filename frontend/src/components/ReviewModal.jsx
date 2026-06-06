@@ -1,25 +1,68 @@
-import { useState } from 'react';
-import { X, Star, Camera, Send } from 'lucide-react';
-import { CATEGORY_STYLE } from '../constants/categories';
+import { useState } from "react";
+import { X, Star, Camera, Send } from "lucide-react";
+import { CATEGORY_STYLE } from "../constants/categories";
+
+function RatingInput({ label, value, onChange }) {
+  return (
+    <div className="flex items-center justify-between rounded-2xl bg-zinc-50 px-4 py-3">
+      <span className="text-sm font-black text-zinc-700">{label}</span>
+
+      <div className="flex gap-2">
+        {Array.from({ length: 5 }).map((_, index) => {
+          const score = index + 1;
+
+          return (
+            <button
+              key={score}
+              type="button"
+              onClick={() => onChange(score)}
+              className="transition hover:scale-110"
+            >
+              <Star
+                size={25}
+                className={
+                  score <= value
+                    ? "fill-orange-500 text-orange-500"
+                    : "text-zinc-300"
+                }
+              />
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function ReviewModal({ place, open, onClose, onSubmit }) {
-  const [rating, setRating] = useState(4);
-  const [text, setText] = useState('');
+  const [tasteRating, setTasteRating] = useState(4);
+  const [serviceRating, setServiceRating] = useState(4);
+  const [priceRating, setPriceRating] = useState(4);
+  const [text, setText] = useState("");
 
   if (!open) return null;
 
   const style = CATEGORY_STYLE[place.category];
 
+  const averageRating = Number(
+    ((tasteRating + serviceRating + priceRating) / 3).toFixed(1)
+  );
+
   const handleSubmit = () => {
     onSubmit({
       placeId: place.id,
       placeName: place.name,
-      rating,
-      text: text.trim() || '아직 리뷰 내용을 입력하지 않았습니다.',
+      tasteRating,
+      serviceRating,
+      priceRating,
+      averageRating,
+      text: text.trim() || "아직 리뷰 내용을 입력하지 않았습니다.",
     });
 
-    setText('');
-    setRating(4);
+    setTasteRating(4);
+    setServiceRating(4);
+    setPriceRating(4);
+    setText("");
     onClose();
   };
 
@@ -58,23 +101,42 @@ export default function ReviewModal({ place, open, onClose, onSubmit }) {
         </div>
 
         <div className="mb-8">
-          <p className="mb-4 text-sm font-black uppercase tracking-widest text-zinc-500">
-            How was your experience?
-          </p>
+          <div className="mb-4 flex items-end justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-widest text-zinc-500">
+                Rate this place
+              </p>
+              <h3 className="mt-1 text-xl font-black text-zinc-900">
+                맛, 서비스, 가격을 평가해주세요.
+              </h3>
+            </div>
 
-          <div className="flex gap-4">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setRating(index + 1)}
-                className="transition hover:scale-110"
-              >
-                <Star
-                  size={32}
-                  className={index < rating ? 'fill-orange-500 text-orange-500' : 'text-zinc-300'}
-                />
-              </button>
-            ))}
+            <div className="rounded-2xl bg-orange-50 px-4 py-2 text-right">
+              <p className="text-xs font-bold text-orange-500">평균 평점</p>
+              <p className="text-xl font-black text-orange-600">
+                {averageRating}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <RatingInput
+              label="맛"
+              value={tasteRating}
+              onChange={setTasteRating}
+            />
+
+            <RatingInput
+              label="서비스"
+              value={serviceRating}
+              onChange={setServiceRating}
+            />
+
+            <RatingInput
+              label="가격"
+              value={priceRating}
+              onChange={setPriceRating}
+            />
           </div>
         </div>
 
@@ -87,7 +149,7 @@ export default function ReviewModal({ place, open, onClose, onSubmit }) {
             rows={5}
             value={text}
             onChange={(event) => setText(event.target.value)}
-            placeholder="분위기, 서비스, 대표 메뉴 등 좋았던 점을 적어주세요."
+            placeholder="맛, 서비스, 가격에 대한 생각을 자유롭게 적어주세요."
             className="w-full resize-none rounded-2xl border border-orange-200 bg-zinc-50 p-4 text-sm font-medium outline-none transition placeholder:text-zinc-400 focus:border-orange-500 focus:bg-white"
           />
         </label>
@@ -106,7 +168,11 @@ export default function ReviewModal({ place, open, onClose, onSubmit }) {
                 </div>
               </button>
 
-              <img src={place.image} alt="preview" className="h-20 w-24 rounded-2xl object-cover" />
+              <img
+                src={place.image}
+                alt="preview"
+                className="h-20 w-24 rounded-2xl object-cover"
+              />
             </div>
           </div>
         </div>
