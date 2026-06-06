@@ -216,14 +216,52 @@ export default function App() {
     );
   };
 
-  const handleSubmitReview = (review) => {
-    const newReview = {
-      id: Date.now(),
-      ...review,
-      createdAt: new Date().toLocaleDateString(),
-    };
+  const handleSubmitReview = async (review) => {
+    if (!isLoggedIn || !user) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
 
-    setMyReviews((prev) => [newReview, ...prev]);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch(`${API_BASE_URL}/reviews/${review.placeId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          tasteScore: review.rating,
+          priceScore: review.rating,
+          serviceScore: review.rating,
+          content: review.text,
+          imageUrl: ''
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || '리뷰 등록에 실패했습니다.');
+      }
+
+      const data = await res.json();
+      
+      const newReview = {
+        id: data.reviewId || Date.now(),
+        placeId: review.placeId,
+        placeName: review.placeName,
+        rating: review.rating,
+        text: review.text,
+        createdAt: new Date().toLocaleDateString(),
+      };
+
+      setMyReviews((prev) => [newReview, ...prev]);
+      alert('리뷰가 성공적으로 등록되었습니다!');
+    } catch (err) {
+      console.error('리뷰 등록 에러:', err);
+      alert(err.message);
+    }
   };
 
   console.log('App 렌더링');
