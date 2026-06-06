@@ -3,8 +3,8 @@
 ForkCup은 사용자가 식당을 검색하고, 지도에서 위치를 확인하며, 메뉴 정보와 리뷰를 조회/작성하고, 마음에 드는 식당을 찜할 수 있는 웹 기반 식당 리뷰 서비스입니다.
 
 ### 본 서비스는 웹서버 상에 배포되어 있는 서비스입니다.
-FrontEnd(Vercel) : https://opensource-sw.vercel.app
-BackEnd(Render) : https://opensource-sw.onrender.com
+FrontEnd(Vercel) : https://opensource-sw.vercel.app<br>
+BackEnd(Render) : https://opensource-sw.onrender.com<br>
 Swagger : https://opensource-sw.onrender.com/swagger-ui/index.html
 
 ## 1. 프로젝트 소개
