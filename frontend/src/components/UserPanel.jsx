@@ -187,48 +187,35 @@ function MyReviewsPanel({ myReviews, onOpenExplore }) {
         <div className="space-y-4">
           {myReviews.map((review) => (
             <article key={review.id} className="rounded-3xl bg-zinc-50 p-5">
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-3 flex items-center justify-between">
                 <h3 className="font-black text-zinc-900">{review.placeName}</h3>
-                {myReviews.map((review) => (
-  <article key={review.id} className="rounded-3xl bg-zinc-50 p-5">
-    <div className="mb-3 flex items-center justify-between">
-      <h3 className="font-black text-zinc-900">{review.placeName}</h3>
 
-      <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-700">
-        평균 {review.averageRating} / 5
-      </span>
-    </div>
+                <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-700">
+                  평균 {review.averageRating} / 5
+                </span>
+              </div>
 
-    <div className="mb-3 grid grid-cols-3 gap-2">
-      <div className="rounded-2xl bg-white p-3 text-center">
-        <p className="text-xs font-bold text-zinc-400">맛</p>
-        <p className="mt-1 text-sm font-black text-orange-600">
-          {review.tasteRating} / 5
-        </p>
-      </div>
+              <div className="mb-3 grid grid-cols-3 gap-2">
+                <div className="rounded-2xl bg-white p-3 text-center">
+                  <p className="text-xs font-bold text-zinc-400">맛</p>
+                  <p className="mt-1 text-sm font-black text-orange-600">
+                    {review.tasteRating} / 5
+                  </p>
+                </div>
 
-      <div className="rounded-2xl bg-white p-3 text-center">
-        <p className="text-xs font-bold text-zinc-400">서비스</p>
-        <p className="mt-1 text-sm font-black text-orange-600">
-          {review.serviceRating} / 5
-        </p>
-      </div>
+                <div className="rounded-2xl bg-white p-3 text-center">
+                  <p className="text-xs font-bold text-zinc-400">서비스</p>
+                  <p className="mt-1 text-sm font-black text-orange-600">
+                    {review.serviceRating} / 5
+                  </p>
+                </div>
 
-      <div className="rounded-2xl bg-white p-3 text-center">
-        <p className="text-xs font-bold text-zinc-400">가격</p>
-        <p className="mt-1 text-sm font-black text-orange-600">
-          {review.priceRating} / 5
-        </p>
-      </div>
-    </div>
-
-    <p className="text-sm leading-6 text-zinc-600">{review.text}</p>
-
-    <p className="mt-3 text-xs font-semibold text-zinc-400">
-      작성일: {review.createdAt}
-    </p>
-  </article>
-))}
+                <div className="rounded-2xl bg-white p-3 text-center">
+                  <p className="text-xs font-bold text-zinc-400">가격</p>
+                  <p className="mt-1 text-sm font-black text-orange-600">
+                    {review.priceRating} / 5
+                  </p>
+                </div>
               </div>
 
               <p className="text-sm leading-6 text-zinc-600">{review.text}</p>
