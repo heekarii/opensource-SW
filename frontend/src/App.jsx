@@ -51,12 +51,46 @@ export default function App() {
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [myReviews, setMyReviews] = useState([]);
 
+  const fetchUserFavoritesAndReviews = async (userId) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      
+      const favRes = await fetch(`${API_BASE_URL}/users/${userId}/favorites`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (favRes.ok) {
+        const favData = await favRes.json();
+        setFavoriteIds(favData.map(f => f.restaurantId));
+      }
+
+      const revRes = await fetch(`${API_BASE_URL}/reviews/users/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (revRes.ok) {
+        const revData = await revRes.json();
+        const mappedMyReviews = revData.map((r) => ({
+          id: r.id,
+          placeId: r.restaurant?.id,
+          placeName: r.restaurant?.name || '알 수 없는 식당',
+          rating: Math.round(((r.tasteScore || 0) + (r.priceScore || 0) + (r.serviceScore || 0)) / 3),
+          text: r.content,
+          createdAt: new Date(r.createdAt).toLocaleDateString(),
+        }));
+        setMyReviews(mappedMyReviews);
+      }
+    } catch (err) {
+      console.error('사용자 데이터 연동 에러:', err);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const savedUser = localStorage.getItem('user');
     if (token && savedUser) {
+      const parsedUser = JSON.parse(savedUser);
       setIsLoggedIn(true);
-      setUser(JSON.parse(savedUser));
+      setUser(parsedUser);
+      fetchUserFavoritesAndReviews(parsedUser.userId);
     }
   }, []);
 
@@ -65,6 +99,8 @@ export default function App() {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
+    setFavoriteIds([]);
+    setMyReviews([]);
     setActiveMenu('explore');
   };
 
@@ -96,6 +132,7 @@ export default function App() {
         email: data.email,
         nickname: data.nickname
       });
+      fetchUserFavoritesAndReviews(data.userId);
       setLoginOpen(false);
       setActiveMenu('home');
     } catch (err) {
@@ -172,6 +209,39 @@ export default function App() {
       });
   }, []);
 
+  useEffect(() => {
+    if (!selectedPlace || !selectedPlace.id) return;
+
+    fetch(`${API_BASE_URL}/reviews/${selectedPlace.id}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('식당 리뷰를 불러오는 데 실패했습니다.');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const mappedReviews = data.map((r) => ({
+          user: r.user?.nickname || '익명',
+          date: new Date(r.createdAt || Date.now()).toLocaleDateString(),
+          text: r.content,
+          rating: Math.round(((r.tasteScore || 0) + (r.priceScore || 0) + (r.serviceScore || 0)) / 3)
+        }));
+
+        setSelectedPlace((prev) => {
+          if (prev && prev.id === selectedPlace.id) {
+            return {
+              ...prev,
+              reviewsList: mappedReviews
+            };
+          }
+          return prev;
+        });
+      })
+      .catch((err) => {
+        console.error('리뷰 불러오기 에러:', err);
+      });
+  }, [selectedPlace?.id]);
+
   const filteredPlaces = useMemo(() => {
     return places.filter((place) => {
       const q = query.trim().toLowerCase();
@@ -203,17 +273,44 @@ export default function App() {
     setReviewOpen(true);
   };
 
-  const handleToggleFavorite = () => {
-    if (!isLoggedIn) {
+  const handleToggleFavorite = async () => {
+    if (!isLoggedIn || !user) {
       requireLogin();
       return;
     }
 
-    setFavoriteIds((prev) =>
-      prev.includes(selectedPlace.id)
-        ? prev.filter((id) => id !== selectedPlace.id)
-        : [...prev, selectedPlace.id]
-    );
+    const isFavorite = favoriteIds.includes(selectedPlace.id);
+    const token = localStorage.getItem('accessToken');
+
+    try {
+      if (!isFavorite) {
+        const res = await fetch(`${API_BASE_URL}/favorites`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            userId: user.userId,
+            restaurantId: selectedPlace.id
+          })
+        });
+        if (!res.ok) throw new Error('즐겨찾기 추가에 실패했습니다.');
+        setFavoriteIds((prev) => [...prev, selectedPlace.id]);
+      } else {
+        const res = await fetch(`${API_BASE_URL}/favorites?userId=${user.userId}&restaurantId=${selectedPlace.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!res.ok) throw new Error('즐겨찾기 해제에 실패했습니다.');
+        setFavoriteIds((prev) => prev.filter((id) => id !== selectedPlace.id));
+      }
+    } catch (err) {
+      console.error('즐겨찾기 토글 에러:', err);
+      alert(err.message);
+    }
   };
 
   const handleSubmitReview = async (review) => {
