@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 로그인, 회원가입, Swagger UI, 식당 목록 조회는 인증 없이 허용
                         .requestMatchers("/api/users/signup", "/api/users/login", "/swagger-ui/**", "/v3/api-docs/**",
-                                "/restaurants/**", "/reviews/**")
+                                "/restaurants", "/restaurants/**", "/reviews/**")
                         .permitAll()
                         // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated())
